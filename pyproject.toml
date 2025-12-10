@@ -1,13 +1,19 @@
 [project]
 name = "lightrag-api"
-version = "0.1.0"
+version = "0.1.1"
 description = "Simple LightRAG API client"
 readme = "README.md"
+authors = [ {name = "ivkond", email = "ivkond@gmail.com"} ]
+license = "MIT"
+keywords = ["rag", "lightrag"]
 requires-python = ">=3.10"
 dependencies = [
     "httpx>=0.28.1",
     "pydantic>=2.12.5",
 ]
+
+[project.urls]
+Repository = "https://github.com/ivkond/lightrag-api.git"
 
 
 [dependency-groups]
