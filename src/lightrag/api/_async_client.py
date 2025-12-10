@@ -112,7 +112,7 @@ class AsyncLightRagClient:
         Args:
             method: HTTP method (GET, POST, DELETE, etc.)
             endpoint: Endpoint (relative path)
-            json_data: JSON data for request body
+            json: JSON data for request body
             files: Files for multipart/form-data
             data: Form data for application/x-www-form-urlencoded
             params: Query parameters
@@ -212,7 +212,7 @@ class AsyncLightRagClient:
             Insert response
         """
         request = InsertTextRequest(text=text, file_source=file_source)
-        response = await self._request("POST", "/documents/text", json_data=request.model_dump())
+        response = await self._request("POST", "/documents/text", json=request.model_dump())
         return InsertResponse(**response.json())
 
     async def insert_texts(
@@ -231,7 +231,7 @@ class AsyncLightRagClient:
         request = InsertTextsRequest(
             texts=texts, file_sources=file_sources or []
         )
-        response = await self._request("POST", "/documents/texts", json_data=request.model_dump())
+        response = await self._request("POST", "/documents/texts", json=request.model_dump())
         return InsertResponse(**response.json())
 
     async def get_documents(self) -> DocsStatusesResponse:
@@ -285,7 +285,7 @@ class AsyncLightRagClient:
             doc_ids=doc_ids, delete_file=delete_file, delete_llm_cache=delete_llm_cache
         )
         response = await self._request(
-            "DELETE", "/documents/delete_document", json_data=request.model_dump()
+            "DELETE", "/documents/delete_document", json=request.model_dump()
         )
         return DeleteDocByIdResponse(**response.json())
 
@@ -298,7 +298,7 @@ class AsyncLightRagClient:
         """
         request = ClearCacheRequest()
         response = await self._request(
-            "POST", "/documents/clear_cache", json_data=request.model_dump()
+            "POST", "/documents/clear_cache", json=request.model_dump()
         )
         return ClearCacheResponse(**response.json())
 
@@ -314,7 +314,7 @@ class AsyncLightRagClient:
         """
         request = DeleteEntityRequest(entity_name=entity_name)
         response = await self._request(
-            "DELETE", "/documents/delete_entity", json_data=request.model_dump()
+            "DELETE", "/documents/delete_entity", json=request.model_dump()
         )
         return DeletionResult(**response.json())
 
@@ -335,7 +335,7 @@ class AsyncLightRagClient:
             source_entity=source_entity, target_entity=target_entity
         )
         response = await self._request(
-            "DELETE", "/documents/delete_relation", json_data=request.model_dump()
+            "DELETE", "/documents/delete_relation", json=request.model_dump()
         )
         return DeletionResult(**response.json())
 
@@ -381,7 +381,7 @@ class AsyncLightRagClient:
             sort_direction=sort_direction,
         )
         response = await self._request(
-            "POST", "/documents/paginated", json_data=request.model_dump()
+            "POST", "/documents/paginated", json=request.model_dump()
         )
         return PaginatedDocsResponse(**response.json())
 
@@ -460,7 +460,7 @@ class AsyncLightRagClient:
         request_data = {k: v for k, v in request_data.items() if v is not None}
 
         request = QueryRequest(**request_data)
-        response = await self._request("POST", "/query", json_data=request.model_dump())
+        response = await self._request("POST", "/query", json=request.model_dump())
         return QueryResponse(**response.json())
 
     async def query_stream(
@@ -555,7 +555,7 @@ class AsyncLightRagClient:
         request_data = {k: v for k, v in request_data.items() if v is not None}
 
         request = QueryRequest(**request_data)
-        response = await self._request("POST", "/query/data", json_data=request.model_dump())
+        response = await self._request("POST", "/query/data", json=request.model_dump())
         return QueryDataResponse(**response.json())
 
     # ========================================================================
@@ -659,7 +659,7 @@ class AsyncLightRagClient:
             allow_merge=allow_merge,
         )
         response = await self._request(
-            "POST", "/graph/entity/edit", json_data=request.model_dump()
+            "POST", "/graph/entity/edit", json=request.model_dump()
         )
         return response.json()
 
@@ -686,7 +686,7 @@ class AsyncLightRagClient:
             updated_data=updated_data,
         )
         response = await self._request(
-            "POST", "/graph/relation/edit", json_data=request.model_dump()
+            "POST", "/graph/relation/edit", json=request.model_dump()
         )
         return response.json()
 
@@ -705,7 +705,7 @@ class AsyncLightRagClient:
         """
         request = EntityCreateRequest(entity_name=entity_name, entity_data=entity_data)
         response = await self._request(
-            "POST", "/graph/entity/create", json_data=request.model_dump()
+            "POST", "/graph/entity/create", json=request.model_dump()
         )
         return response.json()
 
@@ -732,7 +732,7 @@ class AsyncLightRagClient:
             relation_data=relation_data,
         )
         response = await self._request(
-            "POST", "/graph/relation/create", json_data=request.model_dump()
+            "POST", "/graph/relation/create", json=request.model_dump()
         )
         return response.json()
 
@@ -754,7 +754,7 @@ class AsyncLightRagClient:
             entity_to_change_into=entity_to_change_into,
         )
         response = await self._request(
-            "POST", "/graph/entities/merge", json_data=request.model_dump()
+            "POST", "/graph/entities/merge", json=request.model_dump()
         )
         return response.json()
 
@@ -802,7 +802,7 @@ class AsyncLightRagClient:
         Returns:
             Generation result
         """
-        response = await self._request("POST", "/api/generate", json_data=kwargs)
+        response = await self._request("POST", "/api/generate", json=kwargs)
         return response.json()
 
     async def chat(self, **kwargs) -> dict[str, Any]:
@@ -815,7 +815,7 @@ class AsyncLightRagClient:
         Returns:
             Chat result
         """
-        response = await self._request("POST", "/api/chat", json_data=kwargs)
+        response = await self._request("POST", "/api/chat", json=kwargs)
         return response.json()
 
     # ========================================================================
