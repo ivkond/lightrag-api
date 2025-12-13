@@ -137,33 +137,36 @@ class AsyncLightRagClient:
             raise LightRagHttpError("LightRAG communication error") from e
 
     def _prepare_file(
-        self, file_input: str | Path | bytes | io.BytesIO | Any
+        self, file_input: str | Path | bytes | io.BytesIO | Any,
+        file_name: str | None
     ) -> tuple[Any, str | None]:
         """
         Prepare file for upload.
 
         Args:
             file_input: File path, bytes, or file-like object
+            file_name: Optional file name
 
         Returns:
             Tuple (file_object, filename)
         """
-        filename = None
-
         if isinstance(file_input, (str, Path)):
             path = Path(file_input)
             if not path.exists():
                 raise LightRagError(f"File not found: {file_input}")
-            filename = path.name
+            filename = file_name or path.name
             return open(path, "rb"), filename
 
         if isinstance(file_input, bytes):
-            return io.BytesIO(file_input), filename or "file"
+            if file_name is None:
+                raise ValueError("File name must be not None if file is bytes")
+            return io.BytesIO(file_input), file_name
 
         # file-like object
-        if hasattr(file_input, "name"):
-            filename = getattr(file_input, "name", None)
-        return file_input, filename or "file"
+        file_name = file_name or getattr(file_input, "name", None)
+        if file_name is None:
+            raise ValueError("File name must be provided for file-like objects without a name attribute")
+        return file_input, file_name
 
     # ========================================================================
     # Documents methods
@@ -180,18 +183,21 @@ class AsyncLightRagClient:
         return ScanResponse(**response.json())
 
     async def upload_document(
-        self, file: str | Path | bytes | io.BytesIO | Any
+        self,
+        file: str | Path | bytes | io.BytesIO | Any,
+        file_name: str | None = None,
     ) -> InsertResponse:
         """
         Upload a file to the system.
 
         Args:
             file: File path, bytes, or file-like object
+            file_name: Optional file name
 
         Returns:
             Upload response
         """
-        file_obj, filename = self._prepare_file(file)
+        file_obj, filename = self._prepare_file(file, file_name)
         try:
             files = {"file": (filename, file_obj)}
             response = await self._request("POST", "/documents/upload", files=files)
