@@ -186,6 +186,7 @@ class AsyncLightRagClient:
         self,
         file: str | Path | bytes | io.BytesIO | Any,
         file_name: str | None = None,
+        content_type: str | None = None,
     ) -> InsertResponse:
         """
         Upload a file to the system.
@@ -199,7 +200,7 @@ class AsyncLightRagClient:
         """
         file_obj, filename = self._prepare_file(file, file_name)
         try:
-            files = {"file": (filename, file_obj)}
+            files = {"file": (filename, file_obj, content_type)}
             response = await self._request("POST", "/documents/upload", files=files)
             return InsertResponse(**response.json())
         finally:

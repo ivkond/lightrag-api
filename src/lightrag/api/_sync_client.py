@@ -120,6 +120,7 @@ class SyncLightRagClient:
     def upload_document(
         self, file: str | Path | bytes | io.BytesIO | Any,
         file_name: str | None = None,
+        content_type: str | None = None,
     ) -> InsertResponse:
         """
         Upload a file to the system.
@@ -131,7 +132,7 @@ class SyncLightRagClient:
         Returns:
             Upload response
         """
-        return self._run_async(self._async_client.upload_document(file, file_name))
+        return self._run_async(self._async_client.upload_document(file, file_name, content_type))
 
     def insert_text(self, text: str, file_source: str = "") -> InsertResponse:
         """
